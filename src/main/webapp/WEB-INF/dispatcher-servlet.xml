@@ -1,0 +1,38 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+	<context:component-scan base-package="org.nbme.wbti.document" />
+  <bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping" />
+
+ 	<!-- Register the Customer.properties -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="messages" />
+	</bean>
+
+	<bean id="mongo" class="org.springframework.data.mongodb.core.MongoClientFactoryBean">
+		<property name="host" value="localhost" />
+	</bean>
+	<!-- MongoTemplate for connecting and quering the documents in the database -->
+	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg ref="mongo" />
+		<constructor-arg value="test" />
+	</bean>
+
+	<!-- Use this post processor to translate any MongoExceptions thrown in @Repository annotated classes -->
+	<bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+	<bean id="viewResolver"
+	      class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
+          <property name="prefix">
+              <value>/WEB-INF/views/</value>
+           </property>
+          <property name="suffix">
+             <value>.jsp</value>
+          </property>
+    </bean>
+	<mvc:annotation-driven />
+</beans>
