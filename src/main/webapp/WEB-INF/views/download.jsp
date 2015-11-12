@@ -6,18 +6,18 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<title>NBME MVC File Downloads</title>
-	<link href="<c:url value='/static/css/bootstrap.css' />"  rel="stylesheet" type="text/css"></link>
-	<link href="<c:url value='/static/css/app.css' />" rel="stylesheet" type="text/css"></link>
+	<link href="<c:url value='/static/css/bootstrap.css' />"  rel="stylesheet" type="text/css">
+	<link href="<c:url value='/static/css/app.css' />" rel="stylesheet" type="text/css">
 </head>
 <body>
 <h2>Spring MVC download files: ${message}</h2>
 
 <a href="files/nbme">Click and download file here</a>
-<%--<form:form action="file" method="get" modelAttribute="fileNames">
-	<form:select  path="fileNames">
-		<form:options items="${fileNames}"></form:options>
+<form:form action="file" method="get" modelAttribute="allFiles">
+	<form:select path="" items="${allFiles}" itemLabel="name" itemValue="name" name="fileName">
+		<%--<form:options items="${allfiles}"></form:options>--%>
 	</form:select>
 	<input type="submit" value="download"/>
-</form:form>--%>
+</form:form>
 </body>
 </html>
