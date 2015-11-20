@@ -7,6 +7,9 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.nbme.wbti.document.configuration.DocumentServiceConfiguration;
 import org.nbme.wbti.document.model.FileBucket;
 import org.nbme.wbti.document.model.MultiFileBucket;
 import org.nbme.wbti.document.util.FileValidator;
@@ -14,20 +17,23 @@ import org.nbme.wbti.document.util.MultiFileValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class FileUploadController{
-
-	private static String UPLOAD_LOCATION= "target.folder";//"C:\\test\\";
+	Log log = LogFactory.getLog(FileUploadController.class);
+	private static String UPLOAD_LOCATION= "c:\\test\\";//DocumentServiceConfiguration.uploadTargetFolder;
 	
 	@Autowired
 	private FileValidator fileValidator;
@@ -72,7 +78,7 @@ public class FileUploadController{
 		} else {			
 			System.out.println("Fetching file");
 			MultipartFile multipartFile = fileBucket.getFile();
-
+			log.info("upload target: " +UPLOAD_LOCATION);
 			//Now do something with file...
 			FileCopyUtils.copy(fileBucket.getFile().getBytes(), new File(UPLOAD_LOCATION + fileBucket.getFile().getOriginalFilename()));
 			
@@ -80,6 +86,20 @@ public class FileUploadController{
 			model.addAttribute("fileName", fileName);
 			return "success";
 		}
+	}
+
+	@RequestMapping(value="/fileUpload", method = RequestMethod.POST, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
+	public String fileUpload(@RequestParam("file") MultipartFile file, ModelMap model) throws IOException {
+
+			MultipartFile multipartFile = file;
+			log.info("upload target: " +UPLOAD_LOCATION);
+			//Now do something with file...
+			FileCopyUtils.copy(file.getBytes(), new File(UPLOAD_LOCATION + file.getOriginalFilename()));
+
+			String fileName = multipartFile.getOriginalFilename();
+			model.addAttribute("fileName", fileName);
+			log.info("file uploaded successfully to " + UPLOAD_LOCATION);
+			return "success";
 	}
 
 	

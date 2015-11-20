@@ -10,7 +10,7 @@
 	<link href="<c:url value='/static/css/app.css' />" rel="stylesheet" type="text/css">
 </head>
 <body>
-<h2>Spring MVC download files: ${message}</h2>
+<h2>Spring MVC download files:<spring:message code="app.title" text="NBME document service" /></h2>
 
 <a href="files/nbme">Click and download file here</a>
 <form:form action="file" method="get" modelAttribute="allFiles">
