@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nbme.wbti.document.configuration.DocumentServiceConfiguration;
@@ -17,10 +19,16 @@ import org.nbme.wbti.document.util.MultiFileValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
-import org.springframework.http.MediaType;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
@@ -28,7 +36,9 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 @Controller
 public class FileUploadController{
@@ -86,6 +96,38 @@ public class FileUploadController{
 			model.addAttribute("fileName", fileName);
 			return "success";
 		}
+	}
+	@RequestMapping(value="/fileUpload", method = RequestMethod.POST)
+	public String uploadFile(@RequestParam("file") String fileName, ModelMap model)
+	{
+		String targetFilePath = UPLOAD_LOCATION + fileName;
+		String sourceFilePath = "c:\\test\\source\\" + fileName;
+		RestTemplate restTemplate = new RestTemplate();
+		List<HttpMessageConverter<?>> messageConverters = restTemplate.getMessageConverters();
+
+		messageConverters.add(new ByteArrayHttpMessageConverter());
+		messageConverters.add(new FormHttpMessageConverter());
+		restTemplate.setMessageConverters(messageConverters);
+		restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+
+		LinkedMultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+
+		File targetFile = new File(targetFilePath);
+		if(targetFile.exists())
+			targetFile.delete();
+
+
+		map.add("file", new FileSystemResource(sourceFilePath));
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+		HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity = new    HttpEntity<LinkedMultiValueMap<String, Object>>(
+				map, headers);
+
+		ResponseEntity<String> result = restTemplate.exchange(
+				"http://localhost:7001/du/fileUpload", HttpMethod.POST, requestEntity,
+				String.class);
+		return "ok";
 	}
 
 	@RequestMapping(value="/fileUpload", method = RequestMethod.POST, consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
