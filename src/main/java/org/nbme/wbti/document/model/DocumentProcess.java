@@ -19,6 +19,7 @@ public class DocumentProcess {
     private String sourceUrl;
 
    private DocumentAction action;
+    public DocumentProcess(){}
 
     public int getId() {
         return id;
