@@ -121,6 +121,17 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.nbme.jms.common</groupId>
+			<artifactId>JMSCommonService</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+	<!--	<dependency>
+			<groupId>org.apache.xbean</groupId>
+			<artifactId>xbean-spring</artifactId>
+			<version>3.7</version>
+		</dependency>-->
 	</dependencies>
 
 	<build>

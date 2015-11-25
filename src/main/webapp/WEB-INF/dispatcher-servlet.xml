@@ -37,5 +37,10 @@
              <value>.jsp</value>
           </property>
     </bean>
+	<bean id="exchangeRequestService" class="org.nbme.wbti.document.impl.MyRequestServiceImpl">
+	</bean>
+
+	<bean id="exchangeResponseService" class="org.nbme.jms.service.impl.DefaultResponseServiceImpl">
+	</bean>
 	<mvc:annotation-driven />
 </beans>
